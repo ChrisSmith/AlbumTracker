@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/**
+ * Copyright (c) 2010, The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="53dip"
+        android:paddingLeft="20dip"
+        android:paddingRight="20dip"
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+         >
+        
+        <android.widget.ImageView
+            android:id="@+id/album_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+           	android:src="@drawable/albumtracker_icon"
+           	android:layout_gravity="center_horizontal"
+           	android:contentDescription="@string/album_case"/>
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/get_notifications_when_new_albums_are_released"
+            android:gravity="center"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login_activity_username_label"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textStyle="bold"
+            android:layout_marginBottom="5dp"
+             />
+
+        <EditText
+            android:id="@+id/username_edit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:autoText="false"
+            android:capitalize="none"
+            android:hint="@string/username"
+            android:inputType="text"
+            android:minWidth="250dip"
+            android:scrollHorizontally="true"
+            android:singleLine="true" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/auth_bottom_frame"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#c6c3c6"
+        android:minHeight="54dip"
+        android:paddingLeft="2dip"
+        android:paddingRight="2dip"
+        android:paddingTop="4dip" 
+        android:layout_alignParentBottom="true"
+        >
+
+        <Button
+            android:id="@+id/ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:minWidth="100dip"
+            android:onClick="handleLogin"
+            android:text="@string/login_activity_ok_button" />
+    </FrameLayout>
+
+</RelativeLayout>

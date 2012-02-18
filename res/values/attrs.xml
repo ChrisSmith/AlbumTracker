@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="SquareImage">
+        <attr name="fixedAlong" format="string"/>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="detailTextView" parent="android:Widget.TextView">
+        <item name="android:ellipsize">end</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:textColor">#fff</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <style name="buyButton" parent="android:Widget.Button">
+        <item name="android:background">@drawable/btn_default_holo_light</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingLeft">45dp</item>
+        <item name="android:paddingRight">45dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:text">@string/buy_text</item>
+        <item name="android:onClick">onClick</item>
+        <item name="android:visibility">gone</item>
+    </style>
+</resources>

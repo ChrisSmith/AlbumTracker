@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.collegelabs.albumtracker"
+    android:versionCode="1"
+    android:versionName="1.0"
+    >
+    
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_SYNC_STATS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    
+   	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> 
+	<uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="15"/>
+    
+
+
+
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/label"
+        android:hardwareAccelerated="true"
+        android:name="Application"
+		android:theme="@style/Theme.Sherlock.Light.DarkActionBar"
+        >
+         <activity android:name=".activities.MainActivity" 
+				android:label="@string/label"
+			>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".activities.DetailAlbumView" />
+        
+        <activity android:name="org.collegelabs.albumtracker.syncadapter.Settings"> 
+            <intent-filter>
+                <action android:name="org.collegelabs.albumtracker.action.EDIT_SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+                 
+        
+         <!-- Service to download the images in the background -->
+        <service android:name=".syncadapter.BackgroundService" />
+        
+                
+        <!-- The authenticator service -->
+        <service
+            android:name=".authenticator.AuthenticationService"
+            android:exported="true">
+            <intent-filter>
+                <action
+                    android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <service
+            android:name=".syncadapter.SyncService"
+            android:exported="true">
+            <intent-filter>
+                <action
+                    android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+        </service>
+       
+        <activity
+            android:name=".authenticator.AuthenticatorActivity"
+            android:label="@string/ui_activity_title"
+            android:excludeFromRecents="true"
+            >
+            <!--
+                android:configChanges="orientation"
+               
+                No intent-filter here! This activity is only ever launched by
+                someone who explicitly knows the class name
+            -->
+        </activity>
+
+            
+         <provider android:name="org.collegelabs.albumtracker.content.AlbumProvider"
+             android:authorities="org.collegelabs.albumtracker.content.albumprovider" />
+            
+            
+            
+    </application>   
+</manifest>

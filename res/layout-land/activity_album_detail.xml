@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res/org.collegelabs.albumtracker"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/detail_view"
+     >
+	
+	<RelativeLayout
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:id="@+id/detail_view_anim_set"
+     >
+    
+    
+    <org.collegelabs.albumtracker.views.SquareImage
+        android:id="@+id/album_artwork_large"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="#c3c3c3"
+        android:src="@drawable/album_cover"
+        android:contentDescription="@string/album_artwork"
+        android:padding="0dp"
+        android:layout_alignParentRight="true"
+        custom:fixedAlong="height"
+         />
+
+    <TextView
+        android:id="@+id/detail_album_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#0071B5"
+        android:maxLines="2"
+        android:text="Album Title" 
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        style="@style/detailTextView"
+        />
+
+    <TextView
+        android:id="@+id/detail_artist_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/detail_album_title"
+        android:background="#CC3399"
+        android:maxLines="1"
+        android:text="Artist Name"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        style="@style/detailTextView"
+         />
+
+    <TextView
+        android:id="@+id/detail_artist_release"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/detail_artist_name"
+        android:background="#009933"
+        android:maxLines="1"
+        android:text="Dec 4"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        style="@style/detailTextView"
+        />
+
+    </RelativeLayout>
+    
+    <Button
+        android:id="@+id/button_buy_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignBottom="@+id/detail_view_anim_set"
+        style="@style/buyButton"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+    	/>
+    
+</RelativeLayout>

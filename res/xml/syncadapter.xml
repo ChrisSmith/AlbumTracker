@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
+    android:contentAuthority="org.collegelabs.albumtracker.content.albumprovider"
+    android:accountType="org.collegelabs.albumtracker.samplesync"
+    android:supportsUploading="false"
+    android:userVisible="true"
+/>
+<!-- this does nothing? - Android docs are wrong?
+    android:settingsActivity="org.collegelabs.albumtracker.syncadapter.Settings"
+-->

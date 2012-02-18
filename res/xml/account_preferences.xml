@@ -1,0 +1,15 @@
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+            android:title="General Settings" />
+ 
+    <PreferenceScreen
+        android:key="account_settings"
+        android:title="Account Settings"
+        android:summary="Sync frequency, notifications, etc.">
+        <intent
+            android:action="org.collegelabs.albumtracker.action.EDIT_SETTINGS"
+            android:targetPackage="org.collegelabs.albumtracker"
+            android:targetClass="org.collegelabs.albumtracker.syncadapter.Settings" />
+    </PreferenceScreen>
+</PreferenceScreen>
