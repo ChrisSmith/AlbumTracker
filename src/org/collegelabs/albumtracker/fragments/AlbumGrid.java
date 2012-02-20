@@ -22,11 +22,9 @@ import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,7 +34,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.TextView;
 
-public class AlbumGrid extends Fragment implements OnClickListener, OnItemClickListener, SyncStatusObserver, LoaderCallbacks<Cursor> {
+import com.actionbarsherlock.app.SherlockFragment;
+
+public class AlbumGrid extends SherlockFragment implements OnClickListener, OnItemClickListener, SyncStatusObserver, LoaderCallbacks<Cursor> {
 
 	public static final String BUNDLE_EMPTY_MSG = "msg";
 	public static final String BUNDLE_QUERY = "query";
