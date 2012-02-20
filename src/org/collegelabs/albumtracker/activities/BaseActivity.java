@@ -3,13 +3,14 @@ package org.collegelabs.albumtracker.activities;
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.syncadapter.Settings;
 import org.collegelabs.library.bitmaploader.BitmapCache;
-import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
 
+import android.content.Intent;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class BaseActivity extends FragmentActivity {
+public class BaseActivity extends SherlockFragmentActivity {
 
 	@Override
 	public void onStart(){
