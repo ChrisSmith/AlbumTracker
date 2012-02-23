@@ -68,7 +68,9 @@
             android:inputType="text"
             android:minWidth="250dip"
             android:scrollHorizontally="true"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:imeOptions="actionDone"
+            />
         
         <Button
             android:id="@+id/ok_button"
