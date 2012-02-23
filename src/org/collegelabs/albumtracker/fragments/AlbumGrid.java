@@ -63,9 +63,7 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 	
 	@Override 
 	public void onCreate(Bundle savedInstanceState){
-		super.onCreate(savedInstanceState);
-		
-		syncObserverHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE | ContentResolver.SYNC_OBSERVER_TYPE_PENDING, this);
+		super.onCreate(savedInstanceState);		
 	}
 	
 	
@@ -80,6 +78,11 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 		if(args!=null){
 			String q = args.getString(BUNDLE_QUERY);
 			if(q!=null) mQuery = Query.valueOf(q);
+		}
+		
+		//We really only need to display the spinner on the first tab
+		if(syncObserverHandle == null && mQuery.equals(Query.All)){
+			syncObserverHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE | ContentResolver.SYNC_OBSERVER_TYPE_PENDING, this);
 		}
 		
 		updateEmptyText(getView());
