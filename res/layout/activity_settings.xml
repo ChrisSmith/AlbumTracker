@@ -21,4 +21,12 @@
  
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="General" >
+            <Preference
+                android:id="@+id/pref_about"
+                android:summary="About AlbumTracker, Licenses, etc"
+                android:title="About" />
+ 
+    </PreferenceCategory>
+    
 </PreferenceScreen>
