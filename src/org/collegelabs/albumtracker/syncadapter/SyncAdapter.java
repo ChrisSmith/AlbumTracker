@@ -26,6 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.LastfmHelper;
 import org.collegelabs.albumtracker.R;
 import org.collegelabs.albumtracker.activities.MainActivity;
@@ -70,9 +71,8 @@ import android.util.Log;
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
-	public static final String TAG = "SyncAdapter";
-	private static final String SYNC_MARKER_KEY = "com.example.android.samplesync.marker";
-	private static final boolean NOTIFY_AUTH_FAILURE = true;
+	//Unused
+	private static final String SYNC_MARKER_KEY = Constants.ACCOUNT_TYPE+".marker";
 
 	private final AccountManager mAccountManager;
 
@@ -93,7 +93,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 		final int notificationId = account.hashCode();
 
 		LogFile log = new LogFile(mContext);
-
+		
 		try {
 			// see if we already have a sync-state attached to this account. By handing
 			// This value to the server, we can just get the contacts that have
@@ -249,19 +249,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 		} catch (final IOException e) {
 			log.write(e);
-			Log.e(TAG, "IOException", e);
+			Log.e(Constants.TAG, "IOException", e);
 			syncResult.stats.numIoExceptions++;
 		} catch (final ParseException e) {
 			log.write(e);
-			Log.e(TAG, "ParseException", e);
+			Log.e(Constants.TAG, "ParseException", e);
 			syncResult.stats.numParseExceptions++;
 		} catch (SAXException e) {
 			log.write(e);
-			Log.e(TAG, "SAXException", e);
+			Log.e(Constants.TAG, "SAXException", e);
 			syncResult.stats.numParseExceptions++;
 		} catch (ParserConfigurationException e) {
 			log.write(e);
-			Log.e(TAG, "ParserConfigurationException", e);
+			Log.e(Constants.TAG, "ParserConfigurationException", e);
 			syncResult.stats.numParseExceptions++;
 		}finally{
 			log.close();

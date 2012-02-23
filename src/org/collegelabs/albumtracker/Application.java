@@ -15,6 +15,7 @@ public class Application extends android.app.Application {
 	public void onCreate(){
 		super.onCreate();
 
-		BugSenseHandler.setup(this, Utils.getApiKey(this, Utils.BUG_SENSE_KEY));	
+		if(!Constants.DEBUG) 
+			BugSenseHandler.setup(this, Utils.getApiKey(this, Utils.BUG_SENSE_KEY));	
 	}
 }

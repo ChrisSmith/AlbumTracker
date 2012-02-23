@@ -17,41 +17,50 @@ public class LogFile{
 	 * Instance
 	 */
 	private static final String TAG = Constants.TAG;
-	private static final boolean DEBUG = Constants.DEBUG;
 	
 	private BufferedOutputStream os;
-
+	private boolean canWrite = false;
+	
 	public LogFile(Context c){
-		super();
-		open(c);
+		try{
+			//only write to this file in debug mode. This is useful in combination
+			//with our background syncadapter because the Logcat is too short lived.
+			//These file writes will persist to disk where we can retrieve them at our convenience.
+			if(Constants.DEBUG){
+				open(c);
+				canWrite = true;				
+			}
+		}catch(IOException e){
+			//unable to open log file. All calls to write will be ignored (including logcat outputs)
+			canWrite = false;
+		}
 	}
 	
-	private void open(Context c){
+	private void open(Context c) throws IOException{
+		File t = c.getExternalCacheDir();
+
+		if(t == null) throw new IOException("unable to open external cache dir. sdcard might not be mounted/writable");
+		
+		if(!t.exists())
+			t.mkdirs();
+
+		File f = new File(t,TAG+"_log.txt");
 		try{
-			File t = c.getExternalCacheDir();
-
-			if(!t.exists())
-				t.mkdirs();
-
-			File f = new File(t,TAG+"_log.txt");
-			try{
-				if(!f.exists()){
-					f.createNewFile();
-					Log.i(TAG,"created log file");
-				}else{
-					Log.i(TAG,"log file exists");
-				}
-			}catch(Exception e){
-				Log.e(TAG,"unable to create log file");
+			if(!f.exists()){
+				f.createNewFile();
+				Log.i(TAG,"created log file");
+			}else{
+				Log.i(TAG,"log file exists");
 			}
-			os = new BufferedOutputStream(new FileOutputStream(f,true));
 		}catch(Exception e){
-			Log.e(TAG,e.toString());
-			e.printStackTrace();
+			Log.e(TAG,"unable to create log file");
 		}
+		os = new BufferedOutputStream(new FileOutputStream(f,true));
 	}
 
 	public void close(){
+		canWrite = false;
+		
 		if(os!=null){
 			try {
 				os.flush();
@@ -63,9 +72,7 @@ public class LogFile{
 	}
 	
 	public void write(final String msg){
-		if(!DEBUG){
-			return;
-		}
+		if(!canWrite) return;
 		
 		Log.d(TAG,msg);
 		
@@ -79,7 +86,8 @@ public class LogFile{
 	}
 	
 	public void write(final Throwable e){
-		if(!DEBUG) return;
+		if(!canWrite) return;
+		
 		Log.e(TAG,e.toString());
 		
 		e.printStackTrace();

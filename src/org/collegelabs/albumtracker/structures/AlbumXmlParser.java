@@ -3,6 +3,7 @@ package org.collegelabs.albumtracker.structures;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.syncadapter.SyncAdapter;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -50,12 +51,10 @@ public class AlbumXmlParser extends DefaultHandler{
 	// ===========================================================
 	@Override
 	public void startDocument() throws SAXException {
-		Log.d(SyncAdapter.TAG,"starting xml parsing");
 	}
 
 	@Override
 	public void endDocument() throws SAXException {
-		Log.d(SyncAdapter.TAG,"done xml parsing");
 	}
 
 	/** Gets be called on opening tags like: 
