@@ -226,6 +226,9 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 		}
 		
 		progressSpinner.setVisibility(isSyncing ? View.VISIBLE : View.GONE);
+		
+		final View btn = view.findViewById(R.id.button_sync);
+		btn.setVisibility(isSyncing ? View.GONE : View.VISIBLE);
 	}
 	
 	@Override
