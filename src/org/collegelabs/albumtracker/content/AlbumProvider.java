@@ -229,7 +229,6 @@ public class AlbumProvider extends ContentProvider {
 		}
 
 		SQLiteDatabase db = dbHelper.getReadableDatabase();
-		Log.d(TAG,qb.buildQuery(projection, selection, selectionArgs, null, null, sortOrder, null));
 		
 		Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 		c.setNotificationUri(getContext().getContentResolver(), uri);
