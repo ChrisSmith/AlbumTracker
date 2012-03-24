@@ -27,6 +27,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -44,6 +45,8 @@ public class MainActivity extends BaseActivity{
 	@Override
 	public void onCreate(Bundle b){
 		super.onCreate(b);
+		
+		Log.d(Constants.TAG,"Running with debug logs on: "+BuildConfig.DEBUG);
 		
 		Query selectedTab = Query.All;
 		Bundle extras = getIntent().getExtras();

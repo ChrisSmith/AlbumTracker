@@ -28,7 +28,7 @@
             android:layout_below="@id/album_artwork_large"
             android:background="#0071B5"
             android:maxLines="2"
-            android:text="Album Title"
+            android:text="@string/temp_album_title"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
@@ -39,7 +39,7 @@
             android:layout_below="@id/detail_album_title"
             android:background="#CC3399"
             android:maxLines="1"
-            android:text="Artist Name"
+            android:text="@string/temp_artist_name"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -50,7 +50,7 @@
             android:layout_below="@id/detail_artist_name"
             android:background="#009933"
             android:maxLines="1"
-            android:text="Dec 4"
+            android:text="@string/temp_album_date"
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
 

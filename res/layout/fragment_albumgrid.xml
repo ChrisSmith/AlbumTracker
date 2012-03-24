@@ -46,7 +46,7 @@
     <Button 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Sync Now"
+        android:text="@string/sync_now"
         android:id="@+id/button_sync"
         android:visibility="gone"
         />

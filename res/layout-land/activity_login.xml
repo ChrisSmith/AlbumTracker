@@ -62,8 +62,6 @@
             android:id="@+id/username_edit"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:autoText="false"
-            android:capitalize="none"
             android:hint="@string/username"
             android:inputType="text"
             android:minWidth="250dip"
