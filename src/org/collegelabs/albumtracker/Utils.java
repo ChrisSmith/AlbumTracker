@@ -21,7 +21,7 @@ public class Utils {
 			key = Utils.ReadInputStream(inputStream).trim();
 			
 		} catch (IOException e) {
-			Log.d(Constants.TAG, "Unable to load api key ("+keyLocation+"). Please place your key in /assets/keys/<service>.txt");
+			Log.e(Constants.TAG, "Unable to load api key ("+keyLocation+"). Please place your key in /assets/keys/<service>.txt");
 		}	
 		return key;
 	}

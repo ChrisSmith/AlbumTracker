@@ -1,5 +1,6 @@
 package org.collegelabs.albumtracker.syncadapter;
 
+import org.collegelabs.albumtracker.BuildConfig;
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.structures.Album;
 import org.collegelabs.albumtracker.structures.ParseBuyLinksRunnable;
@@ -28,7 +29,7 @@ public class BackgroundService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		String action = intent.getAction();
 		if(action == null){
-			Log.e(Constants.TAG,"BackgroundService: no action was provided");
+			if(BuildConfig.DEBUG) Log.e(Constants.TAG,"BackgroundService: no action was provided");
 			return;
 		}
 
@@ -43,7 +44,7 @@ public class BackgroundService extends IntentService {
 			cache.close();
 			cache.sweep();
 		}else{
-			Log.e(Constants.TAG,"BackgroundService can't handle action: "+action);
+			if(BuildConfig.DEBUG) Log.e(Constants.TAG,"BackgroundService can't handle action: "+action);
 		}
 	}
 
@@ -54,11 +55,11 @@ public class BackgroundService extends IntentService {
 	private void downloadImage(String url){
 
 		if(url==null){
-			Log.e(Constants.TAG,"BackgroundService can't download a null url");
+			if(BuildConfig.DEBUG) Log.e(Constants.TAG,"BackgroundService can't download a null url");
 			return;
 		}
 		
-		Log.d(Constants.TAG,"BackgroundService downloading: "+url);
+		if(BuildConfig.DEBUG) Log.d(Constants.TAG,"BackgroundService downloading: "+url);
 
 		ICachePolicy cache = new BasicCachePolicy(this);
 		new InternetBitmapRunnable(null, url, cache, null).run();

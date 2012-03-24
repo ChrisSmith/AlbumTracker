@@ -16,6 +16,7 @@
 
 package org.collegelabs.albumtracker.authenticator;
 
+import org.collegelabs.albumtracker.BuildConfig;
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.R;
 import org.collegelabs.albumtracker.content.AlbumProvider;
@@ -81,15 +82,15 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 	@Override
 	public void onCreate(Bundle icicle) {
 
-		Log.i(TAG, "onCreate(" + icicle + ")");
+		if(BuildConfig.DEBUG) Log.i(TAG, "onCreate(" + icicle + ")");
 		super.onCreate(icicle);
 		mAccountManager = AccountManager.get(this);
-		Log.i(TAG, "loading data from Intent");
+		if(BuildConfig.DEBUG) Log.i(TAG, "loading data from Intent");
 		final Intent intent = getIntent();
 		mUsername = intent.getStringExtra(PARAM_USERNAME);
 		mRequestNewAccount = mUsername == null;
 		mConfirmCredentials = intent.getBooleanExtra(PARAM_CONFIRM_CREDENTIALS, false);
-		Log.i(TAG, "    request new: " + mRequestNewAccount);
+		if(BuildConfig.DEBUG) Log.i(TAG, "    request new: " + mRequestNewAccount);
 		setContentView(R.layout.activity_login);
 
 //		mMessage = (TextView) findViewById(R.id.message);
@@ -126,7 +127,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 	 * @param result the confirmCredentials result.
 	 */
 	private void finishConfirmCredentials(boolean result) {
-		Log.i(TAG, "finishConfirmCredentials()");
+		if(BuildConfig.DEBUG) Log.i(TAG, "finishConfirmCredentials()");
 		final Account account = new Account(mUsername, Constants.ACCOUNT_TYPE);
 		mAccountManager.setPassword(account, mPassword);
 		final Intent intent = new Intent();
@@ -147,7 +148,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 	 */
 	private void finishLogin(String authToken) {
 
-		Log.i(TAG, "finishLogin()");
+		if(BuildConfig.DEBUG) Log.i(TAG, "finishLogin()");
 		final Account account = new Account(mUsername, Constants.ACCOUNT_TYPE);
 		if (mRequestNewAccount) {
 			mAccountManager.addAccountExplicitly(account, mPassword, null);
@@ -177,7 +178,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 	public void onAuthenticationResult(String authToken) {
 
 		boolean success = ((authToken != null) && (authToken.length() > 0));
-		Log.i(TAG, "onAuthenticationResult(" + success + ")");
+		if(BuildConfig.DEBUG) Log.i(TAG, "onAuthenticationResult(" + success + ")");
 
 		if (success) {
 			if (!mConfirmCredentials) {
@@ -186,7 +187,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 				finishConfirmCredentials(success);
 			}
 		} else {
-			Log.e(TAG, "onAuthenticationResult: failed to authenticate");
+			if(BuildConfig.DEBUG) Log.e(TAG, "onAuthenticationResult: failed to authenticate");
 			if (mRequestNewAccount) {
 				// "Please enter a valid username/password.
 //				mMessage.setText(getText(R.string.login_activity_loginfail_text_both));

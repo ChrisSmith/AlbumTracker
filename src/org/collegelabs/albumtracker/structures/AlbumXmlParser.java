@@ -3,13 +3,9 @@ package org.collegelabs.albumtracker.structures;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.collegelabs.albumtracker.Constants;
-import org.collegelabs.albumtracker.syncadapter.SyncAdapter;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import android.util.Log;
 
 public class AlbumXmlParser extends DefaultHandler{
 
@@ -77,7 +73,6 @@ public class AlbumXmlParser extends DefaultHandler{
 	 * Swap bools
 	 */
 	private void swapElementStatus(String localName, String qName, Attributes atts, boolean enabled){
-//		Log.d(SyncAdapter.TAG, (enabled ? "starting" : "ending") +localName);
 		
 		if(enabled && localName.equals("lfm")){
 		

@@ -49,12 +49,12 @@ public class LogFile{
 		try{
 			if(!f.exists()){
 				f.createNewFile();
-				Log.i(TAG,"created log file");
+				if(BuildConfig.DEBUG) Log.i(TAG,"created log file");
 			}else{
-				Log.i(TAG,"log file exists");
+				if(BuildConfig.DEBUG) Log.i(TAG,"log file exists");
 			}
 		}catch(Exception e){
-			Log.e(TAG,"unable to create log file");
+			if(BuildConfig.DEBUG) Log.e(TAG,"unable to create log file");
 		}
 		os = new BufferedOutputStream(new FileOutputStream(f,true));
 	}
@@ -75,7 +75,7 @@ public class LogFile{
 	public void write(final String msg){
 		if(!canWrite) return;
 		
-		Log.d(TAG,msg);
+		if(BuildConfig.DEBUG) Log.d(TAG,msg);
 		
 		Date d = new Date();
 		try {
@@ -89,7 +89,7 @@ public class LogFile{
 	public void write(final Throwable e){
 		if(!canWrite) return;
 		
-		Log.e(TAG,e.toString());
+		if(BuildConfig.DEBUG) Log.e(TAG,e.toString());
 		
 		e.printStackTrace();
 		getCauses(e);	

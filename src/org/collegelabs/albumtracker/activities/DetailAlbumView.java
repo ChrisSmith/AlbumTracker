@@ -4,6 +4,7 @@ import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+import org.collegelabs.albumtracker.BuildConfig;
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.R;
 import org.collegelabs.albumtracker.content.AlbumProvider;
@@ -195,7 +196,7 @@ public class DetailAlbumView extends BaseActivity {
 				new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						Log.d(Constants.TAG,"selected: "+which);
+						if(BuildConfig.DEBUG) Log.d(Constants.TAG,"selected: "+which);
 						mBuyLinksCursor.moveToPosition(which);
 						
 						int urlIndex = mBuyLinksCursor.getColumnIndexOrThrow(AlbumProvider.AffiliateLink.AffiliateLinks.AFF_BUY_LINK);

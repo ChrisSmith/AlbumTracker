@@ -2,6 +2,7 @@ package org.collegelabs.albumtracker.content;
 
 import java.util.HashMap;
 
+import org.collegelabs.albumtracker.BuildConfig;
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.content.AlbumProvider.AffiliateLink.AffiliateLinks;
 import org.collegelabs.albumtracker.content.AlbumProvider.Album.Albums;
@@ -99,7 +100,7 @@ public class AlbumProvider extends ContentProvider {
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			Log.i(TAG,"creating database");
+			if(BuildConfig.DEBUG) Log.i(TAG,"creating database");
 			//Tables
 			db.execSQL(TABLE_ALBUMS_CREATE);
 			db.execSQL(TABLE_AFFILIATE_LINKS);
@@ -113,7 +114,7 @@ public class AlbumProvider extends ContentProvider {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
+			if(BuildConfig.DEBUG) Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
 					+ newVersion + ", which will destroy all old data");	
 			db.execSQL("DROP TABLE IF EXISTS "+ALBUM_TABLE_NAME);
 			db.execSQL("DROP TABLE IF EXISTS "+AFFILIATE_LINKS_TABLE_NAME);
