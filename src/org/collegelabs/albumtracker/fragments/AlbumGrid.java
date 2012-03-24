@@ -2,6 +2,7 @@ package org.collegelabs.albumtracker.fragments;
 
 import java.util.Date;
 
+import org.collegelabs.albumtracker.BuildConfig;
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.R;
 import org.collegelabs.albumtracker.activities.BaseActivity;
@@ -22,9 +23,11 @@ import android.content.SyncStatusObserver;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,10 +39,12 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
-public class AlbumGrid extends SherlockFragment implements OnClickListener, OnItemClickListener, SyncStatusObserver, LoaderCallbacks<Cursor> {
+public class AlbumGrid extends SherlockFragment implements OnClickListener, OnItemClickListener, LoaderCallbacks<Cursor> {
 
 	public static final String BUNDLE_EMPTY_MSG = "msg";
 	public static final String BUNDLE_QUERY = "query";
+	private static final int SYNC_STATUS_CHANGED = 1;
+	
 	
 	public enum Query{
 		All,
@@ -50,7 +55,13 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 	private static final int LOADER_ID = 0;
 	
 	private BitmapLoader bitmapLoader = null;
-	private Handler uiHandler = new Handler();
+	private Handler uiHandler = new Handler(){
+		@Override
+		public void handleMessage (Message msg){
+			if(msg.what == SYNC_STATUS_CHANGED)
+				onStatusChangedOnUI(msg.arg1);
+		}
+	};
 	
 	private Query mQuery = Query.All;
 	private String mEmptyText = "No Albums";
@@ -59,11 +70,12 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 	private GridView mGridView;
 	private AlbumAdapter mAdapter;
 	private TextView emptyText;
-	
+	private MySyncStatusObserver mSyncObserver;
 	
 	@Override 
 	public void onCreate(Bundle savedInstanceState){
-		super.onCreate(savedInstanceState);		
+		super.onCreate(savedInstanceState);
+		if(BuildConfig.DEBUG) Log.d(Constants.TAG, "[AlbumGrid : "+mQuery+"] onCreate");
 	}
 	
 	
@@ -80,18 +92,25 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 			if(q!=null) mQuery = Query.valueOf(q);
 		}
 		
+		if(BuildConfig.DEBUG) Log.d(Constants.TAG, "[AlbumGrid : "+mQuery+"] onActivityCreated");
+
+		
 		//We really only need to display the spinner on the first tab
 		if(syncObserverHandle == null && mQuery.equals(Query.All)){
-			syncObserverHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE | ContentResolver.SYNC_OBSERVER_TYPE_PENDING, this);
+			mSyncObserver = new MySyncStatusObserver(getActivity(), uiHandler);
+			
+			syncObserverHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE 
+					| ContentResolver.SYNC_OBSERVER_TYPE_PENDING, mSyncObserver);
+			if(BuildConfig.DEBUG) Log.d(Constants.TAG, "[AlbumGrid : "+mQuery+"] register sync handle: "+syncObserverHandle);
 		}
 		
 		updateEmptyText(getView());
 		
 		BaseActivity activity = ((BaseActivity) getActivity());
 		
-		//TODO if this happens, then we are likely leaking the previous activity
-		//until we destroy the loader that is
-		if(bitmapLoader == null) bitmapLoader = new BitmapLoader(activity, activity.getBitmapCache());
+		if(bitmapLoader == null){ //Fragment can be re-attached to the activity, no need to start/stop the loader
+			bitmapLoader = new BitmapLoader(activity, activity.getBitmapCache());
+		}
 
 		View view = getView();
 		
@@ -152,7 +171,12 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 	public void onDestroy(){
 		super.onDestroy();
 		
-		if(syncObserverHandle!=null) ContentResolver.removeStatusChangeListener(syncObserverHandle);
+		if(BuildConfig.DEBUG) Log.d(Constants.TAG, "[AlbumGrid : "+mQuery+"] onDestroy");
+		
+		if(syncObserverHandle!=null){
+			ContentResolver.removeStatusChangeListener(syncObserverHandle);
+			mSyncObserver.onDestroy(); //Have to remove references to the context, otherwise it will leak
+		}
 		if(bitmapLoader!=null) bitmapLoader.shutdownNow();
 	}
 	
@@ -231,40 +255,54 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 		btn.setVisibility(isSyncing ? View.GONE : View.VISIBLE);
 	}
 	
-	@Override
-	public void onStatusChanged(final int status) {
+	static class MySyncStatusObserver implements SyncStatusObserver{
+	
+		private Context mContext;
+		private Handler mHandler;
 		
-		//We get notified on every status change, regardless 
-		//if it is our cursor or not, so we check to see if its ours
-		
-		Context ctx = getActivity();
-		if(ctx == null) return;
-		
-		//notify if sync is not pending
-		boolean shouldNotify = (status != ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
-							 && status != ContentResolver.SYNC_OBSERVER_TYPE_PENDING);
-			
-		AccountManager manager = AccountManager.get(ctx);
-		Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
-		//notify if we have a sync pending
-		for(Account account : accounts){
-			if(ContentResolver.isSyncActive(account, AlbumProvider.AUTHORITY)
-			|| ContentResolver.isSyncPending(account, AlbumProvider.AUTHORITY)){
-			
-				shouldNotify = true;
-			}
+		public MySyncStatusObserver(Context context, Handler handler){
+			mContext = context;
+			mHandler = handler;
 		}
 		
-		if(!shouldNotify) return;
+		public void onDestroy(){
+			mContext = null;
+			mHandler = null;
+		}
 		
-		//This method is never going to run on the UI thread, so post these back to the fragment's handler
-		uiHandler.post(new Runnable(){ 
-			@Override public void run() {
-				onStatusChangedOnUI(status);
+		@Override
+		public void onStatusChanged(final int status) {
+			
+			if(mContext == null || mHandler == null){ //Shouldn't ever happen
+				Log.e(Constants.TAG, "SyncStatusObserver is still active after being unattached");
+				return;
 			}
-		});
+			
+			//We get notified on every status change, regardless 
+			//if it is our cursor or not, so we check to see if its ours
+			//notify if sync is not pending
+			boolean shouldNotify = (status != ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE
+								 && status != ContentResolver.SYNC_OBSERVER_TYPE_PENDING);
+				
+			AccountManager manager = AccountManager.get(mContext);
+			Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
+			//notify if we have a sync pending
+			for(Account account : accounts){
+				if(ContentResolver.isSyncActive(account, AlbumProvider.AUTHORITY)
+				|| ContentResolver.isSyncPending(account, AlbumProvider.AUTHORITY)){
+				
+					shouldNotify = true;
+				}
+			}
+			
+			if(!shouldNotify) return;
+			
+			//This method is never going to run on the UI thread, so post these back to the fragment's handler
+			mHandler.sendMessage(mHandler.obtainMessage(SYNC_STATUS_CHANGED, status, 0));			
+		}
 	}
-
+	
+		
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		
