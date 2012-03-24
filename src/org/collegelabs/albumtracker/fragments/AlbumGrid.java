@@ -75,7 +75,6 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 	@Override 
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		if(BuildConfig.DEBUG) Log.d(Constants.TAG, "[AlbumGrid : "+mQuery+"] onCreate");
 	}
 	
 	
@@ -91,17 +90,13 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 			String q = args.getString(BUNDLE_QUERY);
 			if(q!=null) mQuery = Query.valueOf(q);
 		}
-		
-		if(BuildConfig.DEBUG) Log.d(Constants.TAG, "[AlbumGrid : "+mQuery+"] onActivityCreated");
-
-		
+				
 		//We really only need to display the spinner on the first tab
 		if(syncObserverHandle == null && mQuery.equals(Query.All)){
 			mSyncObserver = new MySyncStatusObserver(getActivity(), uiHandler);
 			
 			syncObserverHandle = ContentResolver.addStatusChangeListener(ContentResolver.SYNC_OBSERVER_TYPE_ACTIVE 
 					| ContentResolver.SYNC_OBSERVER_TYPE_PENDING, mSyncObserver);
-			if(BuildConfig.DEBUG) Log.d(Constants.TAG, "[AlbumGrid : "+mQuery+"] register sync handle: "+syncObserverHandle);
 		}
 		
 		updateEmptyText(getView());
@@ -170,8 +165,6 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
-		
-		if(BuildConfig.DEBUG) Log.d(Constants.TAG, "[AlbumGrid : "+mQuery+"] onDestroy");
 		
 		if(syncObserverHandle!=null){
 			ContentResolver.removeStatusChangeListener(syncObserverHandle);
