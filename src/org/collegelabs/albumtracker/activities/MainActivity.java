@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 
+import org.collegelabs.albumtracker.BuildConfig;
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.R;
 import org.collegelabs.albumtracker.authenticator.AuthenticatorActivity;
@@ -51,7 +52,7 @@ public class MainActivity extends BaseActivity{
 			selectedTab = Query.valueOf(q);
 		}
 		
-		if(Constants.DEBUG) Utils.getInstance().enableStrictMode();
+		if(BuildConfig.DEBUG) Utils.getInstance().enableStrictMode();
 		
 		setContentView(R.layout.activity_main);
 		

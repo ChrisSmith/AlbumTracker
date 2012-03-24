@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
+import org.collegelabs.albumtracker.BuildConfig;
 import org.collegelabs.albumtracker.Constants;
 
 import android.content.Context;
@@ -26,7 +27,7 @@ public class LogFile{
 			//only write to this file in debug mode. This is useful in combination
 			//with our background syncadapter because the Logcat is too short lived.
 			//These file writes will persist to disk where we can retrieve them at our convenience.
-			if(Constants.DEBUG){
+			if(BuildConfig.DEBUG){
 				open(c);
 				canWrite = true;				
 			}

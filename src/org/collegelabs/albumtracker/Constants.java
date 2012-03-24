@@ -19,8 +19,5 @@ public class Constants {
 	public static final String ACTION_EDIT_SETTINGS = "org.collegelabs.albumtracker.action.EDIT_SETTINGS";
 	
 	public static final String TAG = "AlbumTracker";
-	
-	public static boolean DEBUG = true;
-
-	
+		
 }
