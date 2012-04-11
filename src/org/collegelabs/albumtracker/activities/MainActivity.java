@@ -41,7 +41,7 @@ public class MainActivity extends BaseActivity{
 	
 	private ViewPager  mViewPager;
 	private TabsAdapter mTabsAdapter;
-	    
+
 	@Override
 	public void onCreate(Bundle b){
 		super.onCreate(b);
@@ -119,6 +119,7 @@ public class MainActivity extends BaseActivity{
 	}
 	
 	
+	//TODO delayed broadcast to ignore rotation changes?
 	@Override
 	public void onDestroy(){
 		super.onDestroy();

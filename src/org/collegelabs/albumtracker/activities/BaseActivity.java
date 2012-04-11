@@ -2,9 +2,11 @@ package org.collegelabs.albumtracker.activities;
 
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.syncadapter.Settings;
-import org.collegelabs.library.bitmaploader.BitmapCache;
+import org.collegelabs.library.bitmaploader.caches.SimpleLruDiskCache;
+import org.collegelabs.library.bitmaploader.caches.StrongBitmapCache;
 
 import android.content.Intent;
+import android.os.Bundle;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -42,7 +44,25 @@ public class BaseActivity extends SherlockFragmentActivity {
 	/*
 	 * Return the bitmap cache that is managed by the Application (singleton)
 	 */
-	public BitmapCache getBitmapCache(){
+	public StrongBitmapCache getBitmapCache(){
 		return ((org.collegelabs.albumtracker.Application) getApplication()).getBitmapCache();
+	}
+	
+	private SimpleLruDiskCache mCachePolicy;
+	public SimpleLruDiskCache getBitmapCachePolicy(){
+		return mCachePolicy;
+	}
+	
+	@Override
+	public void onCreate(Bundle bundle){
+		super.onCreate(bundle);
+		mCachePolicy = new SimpleLruDiskCache(this);
+		mCachePolicy.setHighWaterMark(10);
+		mCachePolicy.setLowWaterMark(5);
+	}
+	
+	public void onDestroy(){
+		super.onDestroy();
+		mCachePolicy.disconnect();
 	}
 }

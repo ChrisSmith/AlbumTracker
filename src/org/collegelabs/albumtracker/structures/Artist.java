@@ -1,5 +1,8 @@
 package org.collegelabs.albumtracker.structures;
 
+import org.collegelabs.albumtracker.content.AlbumProvider;
+
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -24,6 +27,15 @@ public class Artist implements Parcelable{
 		this.name = name;
 		this.mbid = mbid;
 		this.url = url;
+	}
+	
+	public Artist(Cursor c) {
+		final int colArtistName = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ARTIST_NAME);
+		final int colMBid = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ARTIST_MBID);
+		
+		this.name = c.getString(colArtistName);
+		this.mbid = c.getString(colMBid);
+		this.url = "";		
 	}
 	
 	@Override

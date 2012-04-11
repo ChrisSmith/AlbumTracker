@@ -127,7 +127,7 @@ public class DetailAlbumView extends BaseActivity {
 		if(b!=null){
 			albumArtwork.setImageBitmap(b);
 		}else{
-			bitmapLoader = new BitmapLoader(this, getBitmapCache());
+			bitmapLoader = new BitmapLoader(this, getBitmapCache(), getBitmapCachePolicy());
 			albumArtwork.setImageUrl(album.img_xlarge, bitmapLoader);		
 		}
 		

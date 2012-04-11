@@ -4,9 +4,9 @@ import org.collegelabs.albumtracker.BuildConfig;
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.structures.Album;
 import org.collegelabs.albumtracker.structures.ParseBuyLinksRunnable;
-import org.collegelabs.library.bitmaploader.BasicCachePolicy;
-import org.collegelabs.library.bitmaploader.ICachePolicy;
-import org.collegelabs.library.bitmaploader.InternetBitmapRunnable;
+import org.collegelabs.library.bitmaploader.LoadNetworkBitmap;
+import org.collegelabs.library.bitmaploader.caches.SimpleLruDiskCache;
+
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -40,8 +40,8 @@ public class BackgroundService extends IntentService {
 			Album album = intent.getParcelableExtra(EXTRA_ALBUM);
 			downloadBuylinks(album);
 		}else if(action.equals(ACTION_CLEANUP_CACHE)){
-			BasicCachePolicy cache = new BasicCachePolicy(this);
-			cache.close();
+			SimpleLruDiskCache cache = new SimpleLruDiskCache(this);
+			cache.disconnect();
 			cache.sweep();
 		}else{
 			if(BuildConfig.DEBUG) Log.e(Constants.TAG,"BackgroundService can't handle action: "+action);
@@ -61,9 +61,9 @@ public class BackgroundService extends IntentService {
 		
 		if(BuildConfig.DEBUG) Log.d(Constants.TAG,"BackgroundService downloading: "+url);
 
-		ICachePolicy cache = new BasicCachePolicy(this);
-		new InternetBitmapRunnable(null, url, cache, null).run();
-		cache.close();
+		SimpleLruDiskCache cache = new SimpleLruDiskCache(this);
+		new LoadNetworkBitmap(null, url, cache, null).run();
+		cache.disconnect();
 		
 	}
 }

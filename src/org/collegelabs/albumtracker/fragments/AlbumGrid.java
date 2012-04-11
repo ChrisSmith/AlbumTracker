@@ -1,7 +1,5 @@
 package org.collegelabs.albumtracker.fragments;
 
-import java.util.Date;
-
 import org.collegelabs.albumtracker.BuildConfig;
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.R;
@@ -104,7 +102,7 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 		BaseActivity activity = ((BaseActivity) getActivity());
 		
 		if(bitmapLoader == null){ //Fragment can be re-attached to the activity, no need to start/stop the loader
-			bitmapLoader = new BitmapLoader(activity, activity.getBitmapCache());
+			bitmapLoader = new BitmapLoader(activity, activity.getBitmapCache(), activity.getBitmapCachePolicy());
 		}
 
 		View view = getView();
@@ -189,27 +187,16 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 	@Override
 	public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 		Cursor c = (Cursor) mAdapter.getItem(position);
-		int colArtistName = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ARTIST_NAME);
-		int colMBid = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ARTIST_MBID);
-
-		int colAlbumName = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ALBUM_NAME);
-		int colRelease = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ALBUM_RELEASE_DATE);
-		int colImg = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ALBUM_IMG_XLARGE);
-		int colID = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ALBUM_ID);
-		int colStarred = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ALBUM_STARRED);
-		int colNew = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ALBUM_NEW);
 		
 		final Context context = getActivity();
 		
-		Artist artist = new Artist(c.getString(colArtistName), c.getString(colMBid), "");
-		final Album album = new Album();
-		album.ID = c.getInt(colID);
+		final Artist artist = new Artist(c);
+		final Album album = new Album(c);
 		album.artist = artist;
-		album.name = c.getString(colAlbumName);
-		album.release = new Date(c.getLong(colRelease));
-		album.img_xlarge = c.getString(colImg);
-		album.isNew = c.getInt(colNew) == 1;
-		album.isStarred = c.getInt(colStarred) == 1;
+		
+		if(BuildConfig.DEBUG)
+			Log.d(Constants.TAG,"onClick: "+album.toString());
+			
 		
 		Intent i = new Intent(context,DetailAlbumView.class);
 		i.putExtra("album", album);

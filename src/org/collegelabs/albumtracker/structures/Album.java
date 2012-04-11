@@ -1,6 +1,10 @@
 package org.collegelabs.albumtracker.structures;
 
 import java.util.Date;
+
+import org.collegelabs.albumtracker.content.AlbumProvider;
+
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -33,6 +37,22 @@ public class Album implements Parcelable {
 	public Album(){
 		name = mbid = url = img_small = img_medium = img_large = img_xlarge = "";
 		release = new Date(0);
+	}
+	
+	public Album(Cursor c){
+		final int colAlbumName = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ALBUM_NAME);
+		final int colRelease = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ALBUM_RELEASE_DATE);
+		final int colImg = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ALBUM_IMG_XLARGE);
+		final int colID = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ALBUM_ID);
+		final int colStarred = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ALBUM_STARRED);
+		final int colNew = c.getColumnIndexOrThrow(AlbumProvider.Album.Albums.ALBUM_NEW);
+		
+		this.ID = c.getInt(colID);
+		this.name = c.getString(colAlbumName);
+		this.release = new Date(c.getLong(colRelease));
+		this.img_xlarge = c.getString(colImg);
+		this.isNew = c.getInt(colNew) == 1;
+		this.isStarred = c.getInt(colStarred) == 1;
 	}
 	
 	@Override
