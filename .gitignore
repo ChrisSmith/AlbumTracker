@@ -6,3 +6,4 @@ project.properties
 gen
 assets/keys
 release
+libs/*
