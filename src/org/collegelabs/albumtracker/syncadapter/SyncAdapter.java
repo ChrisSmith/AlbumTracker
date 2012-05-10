@@ -59,6 +59,7 @@ import android.net.ParseException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore.Audio.Albums;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -150,10 +151,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 				Uri albumUri = AlbumProvider.Album.Albums.CONTENT_URI;
 				ContentValues values = new ContentValues();
 				Cursor c = null;
-
+				
 				int newAlbums = 0;
 				Album firstNewAlbum = null;
-
 
 				for(Album album : albums){
 					try{
@@ -205,11 +205,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 							values.put(AlbumProvider.Album.Albums.ALBUM_MBID, album.mbid);
 							values.put(AlbumProvider.Album.Albums.ALBUM_RELEASE_DATE, truncatedAlbumTime);
 							values.put(AlbumProvider.Album.Albums.ALBUM_URL, album.url);
+							
+							if(newAlbums == 0){
+								int modified = markExistingAlbumsAsOld();
+								log.write("marked "+modified+" as old");
+							}
+							
 							Uri resultUri = resolver.insert(albumUri, values); 
 							int albumId = Integer.parseInt(resultUri.getLastPathSegment());
 							album.ID = albumId;
 
-							if(newAlbums==0) firstNewAlbum = album;
+							if(newAlbums == 0) firstNewAlbum = album;
 							newAlbums++;
 
 							log.write("Inserted Album : "+album.name+" id: "+album.ID);
@@ -269,6 +275,18 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
 	}
 
+	
+	private int markExistingAlbumsAsOld(){
+		final String whereNew = AlbumProvider.Album.Albums.ALBUM_NEW+" = ?";
+		final String[] whereNewArgs = new String[] {"1"};
+		ContentValues values = new ContentValues();
+		values.put(AlbumProvider.Album.Albums.ALBUM_NEW, "0");
+		
+		ContentResolver resolver = getContext().getContentResolver();		
+		int modified = resolver.update(AlbumProvider.Album.Albums.CONTENT_URI, values, whereNew, whereNewArgs);
+		return modified;
+	}
+	
 	private static final int ERR_BAD_USER = 6;
 
 	/**
