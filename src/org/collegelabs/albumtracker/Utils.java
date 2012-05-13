@@ -2,6 +2,7 @@ package org.collegelabs.albumtracker;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import android.content.Context;
 import android.util.Log;
@@ -33,5 +34,13 @@ public class Utils {
 			stream.append(new String(b, 0, n));
 		}
 		return stream.toString();
+	}
+	
+	public static void copyStream(InputStream is, OutputStream os)  throws IOException {
+		byte[] buf = new byte[1024];
+		int numRead;
+		while ( (numRead = is.read(buf) ) >= 0) {
+			os.write(buf, 0, numRead);
+		}
 	}
 }

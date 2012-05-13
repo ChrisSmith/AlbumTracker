@@ -42,7 +42,10 @@
             </intent-filter>
         </activity>
         
-        <activity android:name=".activities.DetailAlbumView" />
+        <activity android:name=".activities.DetailAlbumView"
+            android:uiOptions="splitActionBarWhenNarrow"
+            
+            />
         
         <activity android:name="org.collegelabs.albumtracker.syncadapter.Settings"> 
             <intent-filter>

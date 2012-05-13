@@ -1,20 +1,22 @@
 package org.collegelabs.albumtracker.structures;
 
+import org.xml.sax.helpers.DefaultHandler;
 import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
-public class BuyLinksXmlParser extends DefaultHandler {
+public class TrackParser extends DefaultHandler {
 	
-	private boolean isPhysicalMedia = false;
-	
-	private ArrayList<AffiliateLink> listLinks = null;
-	public ArrayList<AffiliateLink> getListLinks(){ return listLinks; }
-	
-	private LastfmError exception = null;
+	public ArrayList<Track> getTracks(){ return mTracks; }
 	public LastfmError getException(){ return this.exception; }
+	
+	
+	private ArrayList<Track> mTracks = null;
+	private LastfmError exception = null;
+	private boolean inArtist = false;
+	private boolean inTrack = false;
+	
 	
 	@Override
 	public void startDocument() throws SAXException {
@@ -41,7 +43,9 @@ public class BuyLinksXmlParser extends DefaultHandler {
 	}
 	
 	
-	AffiliateLink currentLink = null;
+	Track currentTrack = null;
+	Artist currentArtist = null;
+	
 	/*
 	 * Swap booleans
 	 */
@@ -51,30 +55,47 @@ public class BuyLinksXmlParser extends DefaultHandler {
 		
 		}else if(openTag && localName.equals("error")){
 			this.exception = new LastfmError(atts.getValue("code"));
-		}else if (openTag && localName.equals("affiliations")) {
-			listLinks = new ArrayList<AffiliateLink>();
-		}else if(localName.equals("affiliation")){ 
-			if(openTag){
-				currentLink=new AffiliateLink();
-				currentLink.isPhysicalMedia = isPhysicalMedia;
-			}else{
-				listLinks.add(currentLink);
-				currentLink = null;				
+		}else if(localName.equals("artist")){
+			inArtist = openTag;
+			if(inArtist){
+				currentArtist = new Artist();
+			}else if(inTrack){
+				currentTrack.setArtist(currentArtist);
+				currentArtist = null;
 			}
-		}else if(localName.equals("physicals")){
-			isPhysicalMedia = openTag;
+		}else if (openTag && localName.equals("tracks")) {
+			mTracks = new ArrayList<Track>();
+		}else if(localName.equals("track")){
+			inTrack = openTag;
+			if(openTag){
+				currentTrack = new Track();
+			}else{
+				mTracks.add(currentTrack);
+				currentTrack = null;				
+			}
 		}else if(!openTag){ 
 			temp = temp.trim();
-			if(localName.equals("supplierName")){
-				currentLink.supplierName = temp;
-			}else if(localName.equals("currency")){
-				currentLink.currency = temp;
-			}else if(localName.equals("amount")){
-				currentLink.amount = temp;
-			}else if(localName.equals("buyLink")){
-				currentLink.buyLink = temp;
-			}else if(localName.equals("isSearch")){
-				currentLink.isSearch = Integer.parseInt(temp) == 1;
+			
+			if(inArtist){
+				if(localName.equals("name")){
+					currentArtist.name = temp;
+				}else if(localName.equals("mbid")){
+					currentArtist.mbid = temp;
+				}else if(localName.equals("url")){
+					currentArtist.url = temp;
+				}
+				
+			}else if(inTrack){
+				if(localName.equals("name")){
+					currentTrack.setName(temp);
+				}else if(localName.equals("duration")){
+					try{
+						int durration = Integer.parseInt(temp);
+						currentTrack.setLength(durration);
+					}catch(NumberFormatException e){}
+				}else if(localName.equals("url")){
+					currentTrack.setUrl(temp);
+				}
 			}
 			
 			temp = "";

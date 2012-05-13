@@ -260,7 +260,7 @@ public class MainActivity extends BaseActivity{
      * 
      * - via Jake Wharton
      */
-    public static class TabsAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener, ActionBar.TabListener {
+    private static class TabsAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener, ActionBar.TabListener {
         private final ActionBar mActionBar;
         private final ViewPager mViewPager;
         private int tabsCount = 0;

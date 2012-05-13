@@ -1,167 +1,53 @@
 package org.collegelabs.albumtracker.activities;
 
-import java.net.URISyntaxException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
-import org.collegelabs.albumtracker.BuildConfig;
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.R;
 import org.collegelabs.albumtracker.content.AlbumProvider;
+import org.collegelabs.albumtracker.fragments.ArtworkFragment;
+import org.collegelabs.albumtracker.fragments.TrackListFragment;
 import org.collegelabs.albumtracker.structures.Album;
-import org.collegelabs.albumtracker.structures.ParseBuyLinksRunnable;
-import org.collegelabs.library.bitmaploader.BitmapLoader;
-import org.collegelabs.library.bitmaploader.views.AsyncImageView;
 
-import android.app.ActionBar;
-import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Display;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.LayoutAnimationController;
-import android.view.animation.TranslateAnimation;
-import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 public class DetailAlbumView extends BaseActivity {
 
-	private TextView artistName, albumName, releaseDate;
-	private BitmapLoader bitmapLoader = null;
-	private RelativeLayout container; 
 	private Album album;
-	private Cursor mBuyLinksCursor = null;
-	private AsyncTask<?,?,?> mLoaderTask;
+	private ViewPager  mViewPager;
+	private TabsAdapter mTabsAdapter;
 	
 	@Override
 	public void onCreate(Bundle bundle){
 		super.onCreate(bundle);
 		setContentView(R.layout.activity_album_detail);
 
-		getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE);
-		
-		
-		albumName = (TextView) findViewById(R.id.detail_album_title);
-		artistName = (TextView) findViewById(R.id.detail_artist_name);
-		releaseDate = (TextView) findViewById(R.id.detail_artist_release);
-
 		album = (Album) getIntent().getExtras().getParcelable("album");
 
-		albumName.setText(album.name);
-		artistName.setText(album.artist.name);
-		DateFormat outputFormat = new SimpleDateFormat("MMM dd");
 
-		releaseDate.setText(outputFormat.format(album.release));
-
-		Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-
-		int width = display.getWidth();
-		int height = display.getHeight();
-		int spec = (width < height) ? width : height;
-		final double eigth = spec / 8.0 ;
-
-		albumName.setWidth((int) (eigth * 7));
-
-		artistName.post(new Runnable(){ //will run after the view has been laid out and params filled
-			@Override
-			public void run() {
-				int nWidth = (int) (eigth * 5);
-				if(artistName.getWidth() < nWidth){
-					artistName.setWidth(nWidth);			
-				}
-			}
-		});
-
-
-		artistName.post(new Runnable(){
-			@Override
-			public void run() {
-				int nWidth = (int) (eigth * 2);
-				if(releaseDate.getWidth() < nWidth){
-					releaseDate.setWidth(nWidth);			
-				}
-			}
-		});
-
-		AnimationSet set = new AnimationSet(true);
-		
-		Animation animation = new TranslateAnimation(
-				Animation.RELATIVE_TO_SELF, -1.0f,Animation.RELATIVE_TO_SELF, 0.0f,
-				Animation.RELATIVE_TO_SELF, 0.0f,Animation.RELATIVE_TO_SELF, 0.0f
-		);
-		animation.setDuration(150);
-		set.addAnimation(animation);
-
-		LayoutAnimationController controller = new LayoutAnimationController(set, 0.5f);
-		container = ((RelativeLayout)findViewById(R.id.detail_view_anim_set)); 
-		container.setLayoutAnimation(controller);
-
-		Resources resources = getResources();
-		Bitmap defaultAlbumBitmap = new BitmapDrawable(resources,BitmapFactory.decodeResource(resources, R.drawable.album_cover)).getBitmap();
-		
-		AsyncImageView albumArtwork = (AsyncImageView) findViewById(R.id.album_artwork_large);
-		albumArtwork.setDefaultBitmap(defaultAlbumBitmap);
-		
-		Bitmap b = getBitmapCache().get(album.img_xlarge);
-		
-		if(b!=null){
-			albumArtwork.setImageBitmap(b);
-		}else{
-			bitmapLoader = new BitmapLoader(this, getBitmapCache(), getBitmapCachePolicy());
-			albumArtwork.setImageUrl(album.img_xlarge, bitmapLoader);		
-		}
-		
-		
-		final Button buyButton = (Button) findViewById(R.id.button_buy_button);
-		
-		mLoaderTask = new AsyncTask<Void,Void,Cursor>(){
-			@Override
-			protected Cursor doInBackground(Void... params) {
-				
-				ContentResolver resolver = getContentResolver();
-				Uri uri = AlbumProvider.AffiliateLink.AffiliateLinks.CONTENT_URI;
-				String where = AlbumProvider.AffiliateLink.AffiliateLinks.AFF_ALBUM_ID+" = ?";
-				String[] whereArgs = { ""+album.ID};
-				String orderBy = AlbumProvider.AffiliateLink.AffiliateLinks.AFF_SUPPLIER_NAME;
-				Cursor c = resolver.query(uri, null, where, whereArgs, orderBy);
-
-				if(c.getCount() == 0){
-					c.close();
-					new ParseBuyLinksRunnable(DetailAlbumView.this, album).run();
-					c = resolver.query(uri, null, where, whereArgs, orderBy);
-				}
-				
-				return c;
-			}
-			
-			@Override
-			protected void onPostExecute(Cursor cursor){
-				buyButton.setVisibility(View.VISIBLE);
-				mBuyLinksCursor = cursor;
-			}
-			
-		}.execute();
-		
+		ActionBar actionbar = getSupportActionBar();
+		actionbar.setDisplayShowHomeEnabled(false);
+		actionbar.setDisplayShowTitleEnabled(false);
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        
+		mViewPager = (ViewPager)findViewById(R.id.pager);
+        mTabsAdapter = new TabsAdapter(getSupportFragmentManager(), actionbar, mViewPager, album);
+        
+        mTabsAdapter.addTab(actionbar.newTab().setText("Info"));
+        mTabsAdapter.addTab(actionbar.newTab().setText("Tracks"));
+  
 		
 		//Moved from Album Grid because of UI glitches	
 		if(album.isNew){
@@ -181,37 +67,13 @@ public class DetailAlbumView extends BaseActivity {
 	public void onClick(View v){
 		switch(v.getId()){
 		case R.id.button_buy_button:{
-
-			if(mBuyLinksCursor == null){
-				Toast.makeText(this,"Waiting for purchase links", Toast.LENGTH_SHORT).show();
-				return;
-			}else if(mBuyLinksCursor.getCount() == 0){
-				Toast.makeText(this,"No links found for purchase", Toast.LENGTH_SHORT).show();
-				return;
+			
+			FragmentManager fm = getSupportFragmentManager();
+			ArtworkFragment fragment = (ArtworkFragment) fm.findFragmentByTag("artwork");
+			if(fragment != null){
+				fragment.onClickBuyButton(this);
 			}
 			
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("Buy From")
-			.setCursor(mBuyLinksCursor, 
-				new DialogInterface.OnClickListener(){
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if(BuildConfig.DEBUG) Log.d(Constants.TAG,"selected: "+which);
-						mBuyLinksCursor.moveToPosition(which);
-						
-						int urlIndex = mBuyLinksCursor.getColumnIndexOrThrow(AlbumProvider.AffiliateLink.AffiliateLinks.AFF_BUY_LINK);
-						try {
-							Intent i = Intent.parseUri(mBuyLinksCursor.getString(urlIndex), 0);
-							startActivity(i);
-						} catch (URISyntaxException e) {
-							Toast.makeText(DetailAlbumView.this,"Failed to open url", Toast.LENGTH_SHORT).show();
-							e.printStackTrace();
-						}
-					}
-				}, 
-				AlbumProvider.AffiliateLink.AffiliateLinks.AFF_SUPPLIER_NAME)
-			.show();
-	
 		}break;
 		default:
 			break;
@@ -260,9 +122,82 @@ public class DetailAlbumView extends BaseActivity {
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
-		if(mLoaderTask!=null) mLoaderTask.cancel(true);
-		if(bitmapLoader!=null) bitmapLoader.shutdownNow();
-		if(mBuyLinksCursor!=null) mBuyLinksCursor.close();
 	}
+	
+	private static class TabsAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener, ActionBar.TabListener {
+        private final ActionBar mActionBar;
+        private final ViewPager mViewPager;
+        private int tabsCount = 0;
+        private Album mAlbum;
+        
+        public TabsAdapter(FragmentManager fragmentManager, ActionBar actionBar, ViewPager pager, Album album) {
+            super(fragmentManager);
+            mActionBar = actionBar;
+            mViewPager = pager;
+            mViewPager.setAdapter(this);
+            mViewPager.setOnPageChangeListener(this);
+            mAlbum = album;
+        }
+
+        public void addTab(ActionBar.Tab tab) {
+        	tabsCount++;
+            mActionBar.addTab(tab.setTabListener(this));
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            return tabsCount;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+        	Bundle args = new Bundle();
+        	args.putParcelable("album", mAlbum);
+        	Fragment f;
+        	
+        	switch(position){
+        	case 0:
+        		f = new ArtworkFragment();
+        		break;
+        	case 1:
+        		f = new TrackListFragment();
+        		break;
+        	default:
+        		throw new IllegalArgumentException("invalid position");
+        	}
+        	
+        	f.setArguments(args);
+        	return f;
+        }
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            mActionBar.setSelectedNavigationItem(position);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+        }
+
+		@Override
+		public void onTabSelected(Tab tab, FragmentTransaction ft) {
+			mViewPager.setCurrentItem(tab.getPosition());
+		}
+
+		@Override
+		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+			
+		}
+
+		@Override
+		public void onTabReselected(Tab tab, FragmentTransaction ft) {
+			
+		}
+    }
 
 }
