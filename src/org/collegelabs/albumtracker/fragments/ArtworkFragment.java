@@ -27,10 +27,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -44,7 +46,7 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
-public class ArtworkFragment extends SherlockFragment {
+public class ArtworkFragment extends SherlockFragment implements OnClickListener {
 
 	private TextView artistName, albumName, releaseDate;
 	private BitmapLoader bitmapLoader = null;
@@ -168,7 +170,22 @@ public class ArtworkFragment extends SherlockFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		View view = inflater.inflate(R.layout.fragment_album_artwork, null);
+		
+		((Button) view.findViewById(R.id.button_buy_button)).setOnClickListener(this);
+		
 		return view;
+	}
+	
+	@Override
+	public void onClick(View v){
+		switch(v.getId()){
+		case R.id.button_buy_button:
+			onClickBuyButton(getActivity());
+			break;
+			
+		default:
+			break;
+		}
 	}
 	
 	public void onClickBuyButton(final Context ctx){

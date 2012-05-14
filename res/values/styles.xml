@@ -18,7 +18,6 @@
         <item name="android:paddingTop">8dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:text">@string/buy_text</item>
-        <item name="android:onClick">onClick</item>
         <item name="android:visibility">gone</item>
     </style>
 </resources>

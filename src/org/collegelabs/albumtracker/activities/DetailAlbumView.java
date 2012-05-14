@@ -66,15 +66,7 @@ public class DetailAlbumView extends BaseActivity {
 
 	public void onClick(View v){
 		switch(v.getId()){
-		case R.id.button_buy_button:{
-			
-			FragmentManager fm = getSupportFragmentManager();
-			ArtworkFragment fragment = (ArtworkFragment) fm.findFragmentByTag("artwork");
-			if(fragment != null){
-				fragment.onClickBuyButton(this);
-			}
-			
-		}break;
+		
 		default:
 			break;
 		}
