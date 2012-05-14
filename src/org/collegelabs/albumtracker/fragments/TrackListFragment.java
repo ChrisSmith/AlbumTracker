@@ -38,6 +38,8 @@ public class TrackListFragment extends SherlockListFragment implements LoaderCal
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
 		
+		if(mDiskCache != null) mDiskCache.disconnect();
+			
 		mDiskCache = new SimpleLruDiskCache(getActivity());
 		
 		Bundle args = getArguments();
