@@ -300,6 +300,8 @@ public class AlbumGrid extends SherlockFragment implements OnClickListener, OnIt
 			break;
 		case All:
 		default:
+			selection = AlbumProvider.Album.Albums.ALBUM_VISIBLE+" = ?";
+			selectionArgs = new String[] {"1"};
 			break;
 		}
 		

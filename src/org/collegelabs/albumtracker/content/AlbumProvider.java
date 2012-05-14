@@ -25,7 +25,7 @@ public class AlbumProvider extends ContentProvider {
 
 	private static String TAG = Constants.TAG;
 	public static final String DATABASE_NAME = "albumprovider.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	
 
 	public static final String AUTHORITY = "org.collegelabs.albumtracker.content.albumprovider";
@@ -56,7 +56,8 @@ public class AlbumProvider extends ContentProvider {
 	    + Albums.ARTIST_MBID+" string, "
 	    + Albums.ARTIST_URL+" string," 
 	    + Albums.ALBUM_NEW+" integer default 1,"
-	    + Albums.ALBUM_STARRED+" integer default 0 );";
+	    + Albums.ALBUM_STARRED+" integer default 0,"
+	    + Albums.ALBUM_VISIBLE+" integer default 1 );";
 	
 
 	
@@ -70,6 +71,13 @@ public class AlbumProvider extends ContentProvider {
 		 + AffiliateLinks.AFF_AMOUNT+" text, "
 		 + AffiliateLinks.AFF_IS_SEARCH+" boolean, "
 		 + AffiliateLinks.AFF_IS_PHYSICAL+" boolean);";
+	 
+	 /*
+	  * Update Statements
+	  */
+	 private static final String ADD_VISIBLE_COLUMN = 
+		 "alter table "+ALBUM_TABLE_NAME+" add column "+Albums.ALBUM_VISIBLE+" integer default 1";
+	 
 	 
 	 /*
 	  * Indexes
@@ -114,11 +122,22 @@ public class AlbumProvider extends ContentProvider {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			if(BuildConfig.DEBUG) Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-					+ newVersion + ", which will destroy all old data");	
-			db.execSQL("DROP TABLE IF EXISTS "+ALBUM_TABLE_NAME);
-			db.execSQL("DROP TABLE IF EXISTS "+AFFILIATE_LINKS_TABLE_NAME);
-			onCreate(db);            
+			if(BuildConfig.DEBUG) Log.w(TAG, "Upgrading database from version " + oldVersion + " to "+ newVersion);	
+			boolean didUpdate = false;
+			
+			if(oldVersion < 2 && newVersion >= 2){
+				db.execSQL(ADD_VISIBLE_COLUMN);
+				didUpdate = true;
+			}
+			
+			
+			if(!didUpdate){
+				if(BuildConfig.DEBUG) Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
+						+ newVersion + ", which will destroy all old data");	
+				db.execSQL("DROP TABLE IF EXISTS "+ALBUM_TABLE_NAME);
+				db.execSQL("DROP TABLE IF EXISTS "+AFFILIATE_LINKS_TABLE_NAME);
+				onCreate(db);            
+			}
 		}
 	}
 
@@ -272,6 +291,7 @@ public class AlbumProvider extends ContentProvider {
 		albumsProjectionMap.put(Albums.ALBUM_RELEASE_DATE, Albums.ALBUM_RELEASE_DATE);
 		albumsProjectionMap.put(Albums.ALBUM_NEW, Albums.ALBUM_NEW);
 		albumsProjectionMap.put(Albums.ALBUM_STARRED, Albums.ALBUM_STARRED);
+		albumsProjectionMap.put(Albums.ALBUM_VISIBLE, Albums.ALBUM_VISIBLE);
 		
 		//artist attributes
 		albumsProjectionMap.put(Albums.ARTIST_NAME, Albums.ARTIST_NAME);
@@ -320,7 +340,8 @@ public class AlbumProvider extends ContentProvider {
 			public static final String ARTIST_URL = "artist_url";
 		
 			public static final String ALBUM_NEW = "new";	
-			public static final String ALBUM_STARRED = "starred";	
+			public static final String ALBUM_STARRED = "starred";
+			public static final String ALBUM_VISIBLE = "visible";
 			
 		}
 	}
