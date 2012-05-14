@@ -30,27 +30,26 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import android.content.Context;
-import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.bugsense.trace.BugSenseHandler;
 
-public class TrackLoader extends AsyncTaskLoader<ExceptionWrapper<ArrayList<Track>>> {
+public class TrackLoader extends BaseAsyncLoader<ExceptionWrapper<ArrayList<Track>>> {
 
 	private Album mAlbum;
-	private DiskCache mDiskCache; //TODO memory leak
 	private String mUrlString;
 	private URL mUrl;
+	private File mFile;
 	
 	public TrackLoader(Context context, Album album, DiskCache diskCache) {
 		super(context);
 
 		mAlbum = album;
-		mDiskCache = diskCache;
 		
 		try {
 			mUrlString = LastfmHelper.getAlbumInfo(getContext(), mAlbum);
 			mUrl = new URL(mUrlString);
+			mFile = diskCache.getFile(mUrlString);
 			
 		} catch (Exception e) {
 			throw new IllegalArgumentException(e);
@@ -62,10 +61,10 @@ public class TrackLoader extends AsyncTaskLoader<ExceptionWrapper<ArrayList<Trac
 		try{
 			if(BuildConfig.DEBUG) Log.d(Constants.TAG, "[TrackLoader] loading: "+mUrlString);
 			
-			File f = mDiskCache.getFile(mUrlString);
-			if(!f.exists()) downloadUrl(f, mUrl);
+			
+			if(!mFile.exists()) downloadUrl(mFile, mUrl);
 		
-			ArrayList<Track> data = parse(f);
+			ArrayList<Track> data = parse(mFile);
 			return new ExceptionWrapper<ArrayList<Track>>(data);
 						
 		}catch(Exception e){

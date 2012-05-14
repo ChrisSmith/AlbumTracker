@@ -47,8 +47,7 @@ public class TrackListFragment extends SherlockListFragment implements LoaderCal
 		mListView = getListView();
 		mListView.setAdapter(mAdapter);
 		
-		Loader<?> l = getActivity().getSupportLoaderManager().initLoader(0, args, this);
-		l.forceLoad();
+		getActivity().getSupportLoaderManager().initLoader(0, args, this);
 	}
 	
 	@Override
