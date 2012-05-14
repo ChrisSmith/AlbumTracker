@@ -14,6 +14,8 @@ import org.collegelabs.library.bitmaploader.caches.DiskCache;
 import org.collegelabs.library.bitmaploader.caches.SimpleLruDiskCache;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -24,8 +26,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.bugsense.trace.BugSenseHandler;
 
 public class TrackListFragment extends SherlockListFragment implements LoaderCallbacks<ExceptionWrapper<ArrayList<Track>>>{
 
@@ -59,6 +63,21 @@ public class TrackListFragment extends SherlockListFragment implements LoaderCal
 		if(mDiskCache != null) mDiskCache.disconnect();
 	}
 
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		try{
+			Track track = mAdapter.getItem(position);
+			String url = track.getUrl();
+//			url = url.replace("http://www.", "http://m."); //the mobile site isn't that useful
+			
+			Intent i =	new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+			startActivity(i);			
+		}catch(Exception e){
+			Toast.makeText(getActivity(), "Unable to open url", Toast.LENGTH_SHORT).show();
+			BugSenseHandler.log("track-url", e);
+		}
+	}
+	
 	@Override
 	public Loader<ExceptionWrapper<ArrayList<Track>>> onCreateLoader(int loaderId, Bundle bundle) {
 		mAlbum = bundle.getParcelable("album");
