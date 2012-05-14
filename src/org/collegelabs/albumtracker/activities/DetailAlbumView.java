@@ -1,5 +1,8 @@
 package org.collegelabs.albumtracker.activities;
 
+import java.net.URISyntaxException;
+
+import org.collegelabs.albumtracker.BuildConfig;
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.R;
 import org.collegelabs.albumtracker.content.AlbumProvider;
@@ -7,7 +10,11 @@ import org.collegelabs.albumtracker.fragments.ArtworkFragment;
 import org.collegelabs.albumtracker.fragments.TrackListFragment;
 import org.collegelabs.albumtracker.structures.Album;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +22,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -76,7 +84,11 @@ public class DetailAlbumView extends BaseActivity {
 	public boolean onCreateOptionsMenu(Menu menu){
 		menu.add(0, Constants.MENU_STARRED, 0, "Star")
 			.setIcon(album.isStarred ? R.drawable.star_on : R.drawable.star_off)
-			.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		
+		menu.add(0, Constants.MENU_DELETE, 0, "Delete")
+			.setIcon(R.drawable.ic_action_delete)
+			.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -106,11 +118,46 @@ public class DetailAlbumView extends BaseActivity {
 			
 			invalidateOptionsMenu();
 			return true;
+	
+		case Constants.MENU_DELETE:{
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Delete Album")
+			.setMessage("Are you sure you want to delete '"+album.name+"'? This operation can't be undone.")
+			.setPositiveButton("Delete", new OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					deleteAlbum();
+				}
+			})
+			.setNegativeButton("Cancel", null)
+			.show();
+			
+			return true;
+		}
+		
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
+	private void deleteAlbum(){
+		
+		new AsyncTask<Void,Void,Void>(){
+			@Override protected Void doInBackground(Void... params) {
+				String where = AlbumProvider.Album.Albums.ALBUM_ID+" = ?";
+				String[] selectionArgs = {""+album.ID};
+				ContentValues values = new ContentValues();
+				values.put(AlbumProvider.Album.Albums.ALBUM_VISIBLE, 0);
+				getContentResolver().update(AlbumProvider.Album.Albums.CONTENT_URI, values, where, selectionArgs);
+				
+				return null;
+			}
+		}.execute();
+		
+		finish();
+	}
+	
 	@Override
 	public void onDestroy(){
 		super.onDestroy();

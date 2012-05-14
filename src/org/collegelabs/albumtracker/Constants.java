@@ -14,6 +14,7 @@ public class Constants {
 	public static final int MENU_RESTORE_DB = 3;
 	public static final int MENU_STARRED = 4;
 	public static final int MENU_START_SYNC = 5;
+	public static final int MENU_DELETE = 6;
 	
 	//Actions
 	public static final String ACTION_EDIT_SETTINGS = "org.collegelabs.albumtracker.action.EDIT_SETTINGS";
