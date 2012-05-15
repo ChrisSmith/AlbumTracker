@@ -152,12 +152,19 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 		final Account account = new Account(mUsername, Constants.ACCOUNT_TYPE);
 		if (mRequestNewAccount) {
 			mAccountManager.addAccountExplicitly(account, mPassword, null);
-
+			
 			//setup the periodic sync
 			long seconds = 60 * 60 * 24;
 			ContentResolver.setSyncAutomatically(account, AlbumProvider.AUTHORITY, true);
 			ContentResolver.addPeriodicSync(account, AlbumProvider.AUTHORITY, new Bundle(), seconds);
 
+			//Force the sync if global sync is disabled
+			if(!ContentResolver.getMasterSyncAutomatically()){
+				Bundle bundle = new Bundle();
+				bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+				ContentResolver.requestSync(account, AlbumProvider.AUTHORITY, bundle);	
+			}
+			
 		} else {
 			mAccountManager.setPassword(account, mPassword);
 		}
