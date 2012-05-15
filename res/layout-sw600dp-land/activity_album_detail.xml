@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    android:weightSum="2"
+    android:baselineAligned="false"
+    >
+    <FrameLayout android:id="@+id/fragment_left"
+              android:layout_height="fill_parent"
+              android:layout_width="0dp"
+              android:layout_weight="1"
+              />
+    <FrameLayout android:id="@+id/fragment_right"
+              android:layout_height="fill_parent"
+              android:layout_width="0dp" 
+              android:layout_weight="1"
+              android:paddingTop="12dp"
+              />
+</LinearLayout>

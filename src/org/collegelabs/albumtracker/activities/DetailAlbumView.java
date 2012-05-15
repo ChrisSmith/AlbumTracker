@@ -1,8 +1,5 @@
 package org.collegelabs.albumtracker.activities;
 
-import java.net.URISyntaxException;
-
-import org.collegelabs.albumtracker.BuildConfig;
 import org.collegelabs.albumtracker.Constants;
 import org.collegelabs.albumtracker.R;
 import org.collegelabs.albumtracker.content.AlbumProvider;
@@ -14,7 +11,6 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,7 +18,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,8 +29,6 @@ import com.actionbarsherlock.view.MenuItem;
 public class DetailAlbumView extends BaseActivity {
 
 	private Album album;
-	private ViewPager  mViewPager;
-	private TabsAdapter mTabsAdapter;
 	
 	@Override
 	public void onCreate(Bundle bundle){
@@ -44,18 +37,14 @@ public class DetailAlbumView extends BaseActivity {
 
 		album = (Album) getIntent().getExtras().getParcelable("album");
 
-
-		ActionBar actionbar = getSupportActionBar();
-		actionbar.setDisplayShowHomeEnabled(false);
-		actionbar.setDisplayShowTitleEnabled(false);
-		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        
-		mViewPager = (ViewPager)findViewById(R.id.pager);
-        mTabsAdapter = new TabsAdapter(getSupportFragmentManager(), actionbar, mViewPager, album);
-        
-        mTabsAdapter.addTab(actionbar.newTab().setText("Info"));
-        mTabsAdapter.addTab(actionbar.newTab().setText("Tracks"));
-  
+		if(album == null) throw new NullPointerException("bundle must contain album");
+		
+		ViewPager mViewPager = (ViewPager) findViewById(R.id.pager);
+		if(mViewPager != null){
+			setupPagerLayout(mViewPager);
+		}else{
+			setupSplitLayout();
+		}
 		
 		//Moved from Album Grid because of UI glitches	
 		if(album.isNew){
@@ -72,6 +61,34 @@ public class DetailAlbumView extends BaseActivity {
 		}
 	}
 
+	private void setupPagerLayout(ViewPager mViewPager){
+		ActionBar actionbar = getSupportActionBar();
+		actionbar.setDisplayShowHomeEnabled(false);
+		actionbar.setDisplayShowTitleEnabled(false);
+		actionbar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+		TabsAdapter mTabsAdapter = new TabsAdapter(getSupportFragmentManager(), actionbar, mViewPager, album);
+        
+        mTabsAdapter.addTab(actionbar.newTab().setText("Info"));
+        mTabsAdapter.addTab(actionbar.newTab().setText("Tracks"));
+	}
+	
+	private void setupSplitLayout(){
+		FragmentManager fm = getSupportFragmentManager();
+		Bundle bundle = new Bundle();
+		bundle.putParcelable("album", album);
+		
+		Fragment artworkFragment = new ArtworkFragment();
+		artworkFragment.setArguments(bundle);
+		Fragment trackListFragment = new TrackListFragment();
+		trackListFragment.setArguments(bundle);
+		
+		fm.beginTransaction()
+			.replace(R.id.fragment_left, artworkFragment)
+			.replace(R.id.fragment_right, trackListFragment)
+			.commit();
+	}
+	
 	public void onClick(View v){
 		switch(v.getId()){
 		
