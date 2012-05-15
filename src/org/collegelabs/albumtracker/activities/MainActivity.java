@@ -45,8 +45,14 @@ public class MainActivity extends BaseActivity{
 	@Override
 	public void onCreate(Bundle b){
 		super.onCreate(b);
-		
-		Log.d(Constants.TAG,"Running with debug logs on: "+BuildConfig.DEBUG);
+
+		if(BuildConfig.DEBUG){
+			Log.e(Constants.TAG,"Running with debug logs on");			
+		}
+
+		if(org.collegelabs.library.bitmaploader.Constants.DEBUG && !BuildConfig.DEBUG){
+			Log.e(Constants.TAG,"Running with BitmapLoader debug logs on");	
+		}
 		
 		Query selectedTab = Query.All;
 		Bundle extras = getIntent().getExtras();
