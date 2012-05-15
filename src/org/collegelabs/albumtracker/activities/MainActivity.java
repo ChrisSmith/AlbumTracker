@@ -113,8 +113,14 @@ public class MainActivity extends BaseActivity{
 			return;
 		}
 		
+		Bundle bundle = new Bundle();
+		
+		if(!ContentResolver.getMasterSyncAutomatically()){
+			bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+		}
+		
 		for(Account account : accounts){
-			ContentResolver.requestSync(account, AlbumProvider.AUTHORITY, new Bundle());			
+			ContentResolver.requestSync(account, AlbumProvider.AUTHORITY, bundle);			
 		}
 	}
 	
