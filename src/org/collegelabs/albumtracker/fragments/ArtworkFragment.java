@@ -60,7 +60,7 @@ public class ArtworkFragment extends SherlockFragment implements OnClickListener
 	public void onActivityCreated(Bundle bundle){
 		super.onActivityCreated(bundle);
 		
-		View v = getView();
+		final View v = getView();
 		
 		albumName = (TextView) v.findViewById(R.id.detail_album_title);
 		artistName = (TextView) v.findViewById(R.id.detail_artist_name);
@@ -74,36 +74,8 @@ public class ArtworkFragment extends SherlockFragment implements OnClickListener
 
 		releaseDate.setText(outputFormat.format(album.release));
 
-		Display display = ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-
-		int width = display.getWidth();
-		int height = display.getHeight();
-		int spec = (width < height) ? width : height;
-		final double eigth = spec / 8.0 ;
-
-		albumName.setWidth((int) (eigth * 7));
-
-		artistName.post(new Runnable(){ //will run after the view has been laid out and params filled
-			@Override
-			public void run() {
-				int nWidth = (int) (eigth * 5);
-				if(artistName.getWidth() < nWidth){
-					artistName.setWidth(nWidth);			
-				}
-			}
-		});
-
-
-		artistName.post(new Runnable(){
-			@Override
-			public void run() {
-				int nWidth = (int) (eigth * 2);
-				if(releaseDate.getWidth() < nWidth){
-					releaseDate.setWidth(nWidth);			
-				}
-			}
-		});
-
+		measureViewDimens(v);
+		
 		AnimationSet set = new AnimationSet(true);
 		
 		Animation animation = new TranslateAnimation(
@@ -138,6 +110,7 @@ public class ArtworkFragment extends SherlockFragment implements OnClickListener
 		final Button buyButton = (Button) v.findViewById(R.id.button_buy_button);
 		final ContentResolver resolver = getActivity().getContentResolver();
 		
+		if(mLoaderTask == null) //TODO is this an issue?
 		mLoaderTask = new AsyncTask<Void,Void,Cursor>(){
 			@Override
 			protected Cursor doInBackground(Void... params) {
@@ -166,6 +139,45 @@ public class ArtworkFragment extends SherlockFragment implements OnClickListener
 		}.execute();
 		
 	}
+	
+	private void measureViewDimens(final View container){
+		if(albumName == null || artistName == null || releaseDate == null)
+			throw new NullPointerException("albumName, artistName and releaseDate can't be null");
+		
+		container.post(new Runnable() {
+			@Override public void run() {
+				final int width = container.getWidth();
+				final int height = container.getWidth();				
+				final int spec = (width < height) ? width : height;
+				final double eigth = spec / 8.0 ;
+
+
+				albumName.setWidth((int) (eigth * 7));
+
+				artistName.post(new Runnable(){ //will run after the view has been laid out and params filled
+					@Override
+					public void run() {
+						int nWidth = (int) (eigth * 5);
+						if(artistName.getWidth() < nWidth){
+							artistName.setWidth(nWidth);			
+						}
+					}
+				});
+
+
+				artistName.post(new Runnable(){
+					@Override
+					public void run() {
+						int nWidth = (int) (eigth * 2);
+						if(releaseDate.getWidth() < nWidth){
+							releaseDate.setWidth(nWidth);			
+						}
+					}
+				});
+			}
+		});
+	}
+	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
